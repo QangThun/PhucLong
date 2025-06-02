@@ -11,11 +11,18 @@ public class DAO {
     }
     
     public DAO(){
-        try{
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = (Connection) DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=CafeManagement;user=sa;password=814362;encrypt =  false;");
-        }catch(Exception ex){
-            ex.printStackTrace();
+        try {
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=CafeManagement;user=sa;password=814362;encrypt =  false;";
+            String username = "sa";
+            String password = "123";
+            
+            conn = DriverManager.getConnection(url, username, password);
+            System.out.println("Kết nối thành công!");
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi kết nối database: " + e.getMessage());
+            conn = null;
         }
     }    
 }
+    
