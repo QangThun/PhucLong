@@ -2,7 +2,6 @@ package Com.Controller;
 
 import java.sql.*;
 
-
 public class DAO {
     private Connection conn;
 
@@ -11,18 +10,15 @@ public class DAO {
     }
     
     public DAO(){
-        try {
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=CafeManagement;user=sa;password=814362;encrypt =  false;";
-            String username = "sa";
-            String password = "123";
-            
-            conn = DriverManager.getConnection(url, username, password);
+        try{
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            conn = DriverManager.getConnection(
+                "jdbc:sqlserver://localhost:1433;databaseName=CafeManagement;user=sa;password=814362;encrypt=false;"
+            );
             System.out.println("Kết nối thành công!");
-            
-        } catch (SQLException e) {
-            System.err.println("Lỗi kết nối database: " + e.getMessage());
+        }catch(Exception ex){
+            System.err.println("Lỗi kết nối database: " + ex.getMessage());
             conn = null;
         }
     }    
 }
-    

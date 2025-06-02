@@ -90,13 +90,13 @@ CREATE TABLE ChiTietHoaDon (
 GO
 --Tạo giá trị mặc định ban đầu
 INSERT Staff VALUES 
-(N'Tạ Văn Tiến', 'Nam', '2005-10-15','0345601751',N'Liệp Tuyết','admin','123456','tavantien786@gmail.com','admin',NULL),
-(N'Kiều Minh Hiếu', 'Nam', '2005-3-17','0123456789',N'Liệp Tuyết',N'hieukichan','123456','hieukichan@gmail.com','nhan vien',NULL),
-(N'Đỗ Thị Thùy', N'Nữ', '2005-4-17','0987654321',N'Thạch Thất',N'thuydo1704','123456','thuydo1704@gmail.com','nhan vien',NULL)
+(N'Bùi Đình Quyết', 'Nam', '2005-07-02','0123456789',N'Liệp Tuyết','admin','123456','quyetbuidinh@gmail.com','admin',NULL),
+(N'Phạm Quang Thuần', 'Nam', '2005-3-17','0123456789',N'Liệp Tuyết',N'thuanpq','123456','thuanpq@gmail.com','nhan vien',NULL),
+(N'Nguyễn Văn Phú', N'Nam', '2005-4-17','0123456789',N'Thạch Thất',N'phunv','123456','phunv@gmail.com','nhan vien',NULL)
 
 INSERT Customer VALUES 
-(N'Kiều Minh Hiếu', 'Nam', '2005-3-17','0123456789',N'Liệp Tuyết','hieukichan@gmail.com'),
-(N'Nguyễn Danh Thao', 'Nam','2005-1-1','1234567890',N'Ba Vì','thao@gmail.com')
+(N'Dương Anh Tuấn', 'Nam', '2005-3-17','0123456789',N'Liệp Tuyết','tuanda@gmail.com'),
+(N'Nguyễn Đức Quý', 'Nam','2005-1-1','1234567890',N'Ba Vì','quydn@gmail.com')
 
 INSERT LoaiSanPham VALUES 
 ('SP01',N'Nước Uống',N'Còn'),
