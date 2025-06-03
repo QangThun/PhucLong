@@ -7,16 +7,26 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class UserDAO extends DAO{
-    // delete DAO dao = new DAO();
     ArrayList<ModelUser> dsUser;
 
     public UserDAO() {
-        // check connection
-        if (getConn() != null) {
-            dsUser = getListUser();
-        } else {
+        // check connection with better error handling
+        try {
+            if (getConn() != null) {
+                System.out.println("Database connection successful!");
+                dsUser = getListUser();
+            } else {
+                dsUser = new ArrayList<>();
+                System.err.println("Không thể khởi tạo UserDAO - connection null");
+                JOptionPane.showMessageDialog(null, "Lỗi kết nối database! Kiểm tra:\n" +
+                    "1. MySQL Server đã chạy chưa?\n" +
+                    "2. Database có tồn tại không?\n" +
+                    "3. Username/Password đúng chưa?");
+            }
+        } catch (Exception e) {
             dsUser = new ArrayList<>();
-            System.err.println("Không thể khởi tạo UserDAO - connection null");
+            System.err.println("Lỗi khởi tạo UserDAO: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Lỗi khởi tạo UserDAO: " + e.getMessage());
         }
     }
     
@@ -72,14 +82,17 @@ public class UserDAO extends DAO{
                 s.setPhone(rs.getString("PhoneNumber"));
                 s.setAddress(rs.getString("AddressStaff"));
                 s.setUsername(rs.getString("UserName"));
-                s.setPassword(rs.getString("PasswordStaff"));
+                // FIX: Đổi từ "PasswordStaff" thành "PassWordStaff" cho khớp với INSERT
+                s.setPassword(rs.getString("PassWordStaff"));
                 s.setEmail(rs.getString("Email"));
                 s.setPosition(rs.getString("Position"));
                 s.setImage(rs.getBytes("ImageStaff"));
                 dsUser.add(s);
             }
+            System.out.println("Loaded " + dsUser.size() + " users from database");
         }catch (SQLException ex){
             System.err.println("Lỗi getListUser: " + ex.getMessage());
+            ex.printStackTrace();
         }
         return dsUser;
     }
@@ -158,7 +171,7 @@ public class UserDAO extends DAO{
                 s.setPhone(rs.getString("PhoneNumber"));
                 s.setAddress(rs.getString("AddressStaff"));
                 s.setUsername(rs.getString("UserName"));
-                s.setPassword(rs.getString("PasswordStaff"));
+                s.setPassword(rs.getString("PassWordStaff"));
                 s.setEmail(rs.getString("Email"));
                 s.setPosition(rs.getString("Position"));
                 s.setImage(rs.getBytes("ImageStaff"));

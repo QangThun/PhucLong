@@ -1,4 +1,3 @@
-
 package Com.View.Dashboard;
 
 import Com.Event.MenuEvent;
@@ -12,17 +11,15 @@ import Com.View.Form.Product.FormProductDetail;
 import Com.View.Form.Sell.FormSell;
 import Com.View.Form.Statistics.FormStatistics;
 import Com.View.Login.Login;
-import Com.View.Component.Menu; // Import Menu component
+import Com.View.Component.Menu;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 public class Dashboard extends javax.swing.JFrame {
     
-    private Menu menu; // Declare menu variable
+    private Menu menu;
     
     public Dashboard() {
         try {
@@ -34,60 +31,80 @@ public class Dashboard extends javax.swing.JFrame {
             // Initialize menu
             menu = new Menu();
             
-            MenuEvent event;
-            event = (int index) -> {
-                switch (index) {
-                    case 0 -> {
-                        MainFormDashboard mainFormDashboard = new MainFormDashboard();
-                        showForm(mainFormDashboard);
-                    }
-                    case 1 -> {
-                        FormSell formSell = new FormSell();
-                        showForm(formSell);
-                    }
-                    case 2 -> {
-                        FormStaff formStaff = new FormStaff();
-                        showForm(formStaff);
-                    }
-                    case 4 -> {
-                        FormOrder formOrder = new FormOrder();
-                        showForm(formOrder);
-                    }
-                    case 5 -> {
-                        FormProductDetail formProduct = new FormProductDetail();
-                        showForm(formProduct);
-                    }
-                    case 6 -> {
-                        FormCustomer formCustomer = new FormCustomer();
-                        showForm(formCustomer);
-                    }
-                    case 7 -> {
-                        FormStatistics formStatistics = new FormStatistics();
-                        showForm(formStatistics);
-                    }
-                    case 8 -> {
-                        InforForm inforForm = new InforForm();
-                        showForm(inforForm);
-                    }
-                    case 9 -> {
-                        int opt = JOptionPane.showConfirmDialog(null, "Bạn có muốn thoát không ?", "Delete", JOptionPane.YES_NO_OPTION);
-                        if (opt == 0) {
-                            Login loginFrame = new Login();
-                            loginFrame.setVisible(true);
-                            loginFrame.pack();
-                            loginFrame.setLocationRelativeTo(null); // Frame Center
-                            loginFrame.setResizable(false);
-                            closeFrame();
-                        }
-                    }
-                    default -> showForm(new Form(index + ""));
+            // Tạo MenuEvent không dùng lambda để tương thích với Java cũ
+            MenuEvent event = new MenuEvent() {
+                @Override
+                public void menuSelected(int index) {
+                    handleMenuSelection(index);
                 }
             };
+            
             menu.initMenu(event);
             menu.setSelected(0);
+            
+            // Thêm menu vào panel nếu có menuPanel
+            if (menuPanel != null) {
+                menuPanel.removeAll();
+                menuPanel.setLayout(new java.awt.BorderLayout());
+                menuPanel.add(menu, java.awt.BorderLayout.CENTER);
+                menuPanel.revalidate();
+                menuPanel.repaint();
+            }
+            
         } catch (Exception e) {
+            System.out.println("Lỗi khi khởi tạo menu: " + e.getMessage());
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khởi tạo Dashboard: " + e.getMessage());
+        }
+    }
+    
+    private void handleMenuSelection(int index) {
+        switch (index) {
+            case 0:
+                MainFormDashboard mainFormDashboard = new MainFormDashboard();
+                showForm(mainFormDashboard);
+                break;
+            case 1:
+                FormSell formSell = new FormSell();
+                showForm(formSell);
+                break;
+            case 2:
+                FormStaff formStaff = new FormStaff();
+                showForm(formStaff);
+                break;
+            case 4:
+                FormOrder formOrder = new FormOrder();
+                showForm(formOrder);
+                break;
+            case 5:
+                FormProductDetail formProduct = new FormProductDetail();
+                showForm(formProduct);
+                break;
+            case 6:
+                FormCustomer formCustomer = new FormCustomer();
+                showForm(formCustomer);
+                break;
+            case 7:
+                FormStatistics formStatistics = new FormStatistics();
+                showForm(formStatistics);
+                break;
+            case 8:
+                InforForm inforForm = new InforForm();
+                showForm(inforForm);
+                break;
+            case 9:
+                int opt = JOptionPane.showConfirmDialog(null, "Bạn có muốn thoát không ?", "Delete", JOptionPane.YES_NO_OPTION);
+                if (opt == 0) {
+                    Login loginFrame = new Login();
+                    loginFrame.setVisible(true);
+                    loginFrame.pack();
+                    loginFrame.setLocationRelativeTo(null);
+                    loginFrame.setResizable(false);
+                    closeFrame();
+                }
+                break;
+            default:
+                showForm(new Form(index + ""));
+                break;
         }
     }
     
@@ -103,7 +120,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -156,7 +173,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         pack();
         setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 

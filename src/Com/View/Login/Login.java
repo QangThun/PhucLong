@@ -13,21 +13,41 @@ public class Login extends javax.swing.JFrame {
     UserDAO udao = new UserDAO();
     public static ModelUser user;
     
-    public Login() {
-        initComponents();
+ public Login() {
+    initComponents();
+    
+    // Safe image loading với try-catch
+    try {
         scaleImage();
-        setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
-        UserNameTextField.setHint("User....");
+    } catch (Exception e) {
+        System.out.println("Không thể load background image: " + e.getMessage());
     }
     
-    //Chỉnh kích thước ảnh theo với Jlaybel
-    public void scaleImage(){
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/ANh Em Quán.png"));
-        Image img = icon.getImage();
-        Image imgScale = img.getScaledInstance(jLabel6.getWidth(), jLabel6.getHeight(), Image.SCALE_SMOOTH);
-        ImageIcon acalledIcon = new ImageIcon(imgScale );
-        jLabel6.setIcon(acalledIcon);
+    try {
+        setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
+    } catch (Exception e) {
+        System.out.println("Không thể set icon frame: " + e.getMessage());
     }
+    
+    UserNameTextField.setHint("User....");
+}
+
+//Chỉnh kích thước ảnh theo với JLabel - Version an toàn
+public void scaleImage(){
+    try {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/ANh Em Quán.png"));
+        if (icon.getIconWidth() > 0) { // Kiểm tra image có load được không
+            Image img = icon.getImage();
+            Image imgScale = img.getScaledInstance(jLabel6.getWidth(), jLabel6.getHeight(), Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(imgScale);
+            jLabel6.setIcon(scaledIcon);
+        } else {
+            System.out.println("Không thể load image: /Com/Icon/ANh Em Quán.png");
+        }
+    } catch (Exception e) {
+        System.out.println("Lỗi khi scale image: " + e.getMessage());
+    }
+}
 
 
     @SuppressWarnings("unchecked")
@@ -204,20 +224,47 @@ public class Login extends javax.swing.JFrame {
     //Event nút Login
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
         boolean kt = false;
+    
+    // Validation input
+    if(UserNameTextField.getText().trim().isEmpty() || UserPasswordField.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+    
+    try {
         for(ModelUser m : udao.getListUser()){
-            if(UserNameTextField.getText().equalsIgnoreCase(m.getUsername()) && UserPasswordField.getText().equalsIgnoreCase(m.getPassword())){
+            if(UserNameTextField.getText().equalsIgnoreCase(m.getUsername()) && 
+               UserPasswordField.getText().equalsIgnoreCase(m.getPassword())){
                 user = m;
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
-                Dashboard testDasdboard = new Dashboard();
-                testDasdboard.setVisible(true);
-                testDasdboard.pack();
-                testDasdboard.setLocationRelativeTo(null); // Frame Center
-                this.dispose();                
                 kt = true;
+                break; // Thoát khỏi loop khi tìm thấy
             }   
         }
-        if(kt == false)
-            JOptionPane.showMessageDialog(this, "Đăng nhập thất bại !!!");      
+        
+        if(kt) {
+            JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+            
+            // Thêm try-catch khi khởi tạo Dashboard
+            try {
+                Dashboard testDashboard = new Dashboard();
+                testDashboard.setVisible(true);
+                testDashboard.pack();
+                testDashboard.setLocationRelativeTo(null);
+                this.dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi khởi tạo Dashboard: " + e.getMessage());
+                // Không dispose() nếu Dashboard lỗi
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng!");
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi đăng nhập: " + e.getMessage());
+        
+    }  
     }//GEN-LAST:event_LoginButtonActionPerformed
 
   
