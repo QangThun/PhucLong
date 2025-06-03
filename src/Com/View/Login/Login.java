@@ -1,53 +1,68 @@
 package Com.View.Login;
 
-
 import Com.Controller.UserDAO;
 import Com.Model.ModelUser;
 import Com.View.Dashboard.Dashboard;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class Login extends javax.swing.JFrame {
     
-    UserDAO udao = new UserDAO();
+    private UserDAO udao;
     public static ModelUser user;
     
- public Login() {
-    initComponents();
-    
-    // Safe image loading với try-catch
-    try {
-        scaleImage();
-    } catch (Exception e) {
-        System.out.println("Không thể load background image: " + e.getMessage());
-    }
-    
-    try {
-        setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
-    } catch (Exception e) {
-        System.out.println("Không thể set icon frame: " + e.getMessage());
-    }
-    
-    UserNameTextField.setHint("User....");
-}
-
-//Chỉnh kích thước ảnh theo với JLabel - Version an toàn
-public void scaleImage(){
-    try {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/ANh Em Quán.png"));
-        if (icon.getIconWidth() > 0) { // Kiểm tra image có load được không
-            Image img = icon.getImage();
-            Image imgScale = img.getScaledInstance(jLabel6.getWidth(), jLabel6.getHeight(), Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(imgScale);
-            jLabel6.setIcon(scaledIcon);
-        } else {
-            System.out.println("Không thể load image: /Com/Icon/ANh Em Quán.png");
+    public Login() {
+        try {
+            initComponents();
+            
+            // Initialize UserDAO with proper error handling
+            try {
+                udao = new UserDAO();
+            } catch (Exception e) {
+                System.err.println("Lỗi khởi tạo UserDAO: " + e.getMessage());
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
+            }
+            
+            // Safe image loading với try-catch
+            try {
+                scaleImage();
+            } catch (Exception e) {
+                System.out.println("Không thể load background image: " + e.getMessage());
+            }
+            
+            try {
+                setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
+            } catch (Exception e) {
+                System.out.println("Không thể set icon frame: " + e.getMessage());
+            }
+            
+            UserNameTextField.setHint("User....");
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khởi tạo Login: " + e.getMessage());
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        System.out.println("Lỗi khi scale image: " + e.getMessage());
     }
-}
+
+    //Chỉnh kích thước ảnh theo với JLabel - Version an toàn
+    public void scaleImage(){
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/ANh Em Quán.png"));
+            if (icon.getIconWidth() > 0) { // Kiểm tra image có load được không
+                Image img = icon.getImage();
+                Image imgScale = img.getScaledInstance(jLabel6.getWidth(), jLabel6.getHeight(), Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(imgScale);
+                jLabel6.setIcon(scaledIcon);
+            } else {
+                System.out.println("Không thể load image: /Com/Icon/ANh Em Quán.png");
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi khi scale image: " + e.getMessage());
+        }
+    }
 
 
     @SuppressWarnings("unchecked")
@@ -212,59 +227,87 @@ public void scaleImage(){
 
     //Event nút Sign Up
     private void SignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignUpButtonActionPerformed
-        // TODO add your handling code here:
-        SignUp1 signFrame = new SignUp1();
-        signFrame.setVisible(true);
-        signFrame.pack();
-        signFrame.setLocationRelativeTo(null); // Frame Center
-        signFrame.setResizable(false);
-        this.dispose();
+         try {
+            SignUp1 signFrame = new SignUp1();
+            signFrame.setVisible(true);
+            signFrame.pack();
+            signFrame.setLocationRelativeTo(null); // Frame Center
+            signFrame.setResizable(false);
+            this.dispose();
+        } catch (Exception e) {
+            System.err.println("Lỗi khi mở SignUp form: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Không thể mở form đăng ký: " + e.getMessage());
+        }
     }//GEN-LAST:event_SignUpButtonActionPerformed
     
     //Event nút Login
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
+         // Kiểm tra UserDAO đã được khởi tạo chưa
+        if (udao == null) {
+            JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu!");
+            return;
+        }
+        
         boolean kt = false;
     
-    // Validation input
-    if(UserNameTextField.getText().trim().isEmpty() || UserPasswordField.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-    
-    try {
-        for(ModelUser m : udao.getListUser()){
-            if(UserNameTextField.getText().equalsIgnoreCase(m.getUsername()) && 
-               UserPasswordField.getText().equalsIgnoreCase(m.getPassword())){
-                user = m;
-                kt = true;
-                break; // Thoát khỏi loop khi tìm thấy
-            }   
+        // Validation input
+        if(UserNameTextField.getText().trim().isEmpty() || UserPasswordField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            return;
         }
         
-        if(kt) {
-            JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
-            
-            // Thêm try-catch khi khởi tạo Dashboard
-            try {
-                Dashboard testDashboard = new Dashboard();
-                testDashboard.setVisible(true);
-                testDashboard.pack();
-                testDashboard.setLocationRelativeTo(null);
-                this.dispose();
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi khi khởi tạo Dashboard: " + e.getMessage());
-                // Không dispose() nếu Dashboard lỗi
+        try {
+            // Kiểm tra danh sách user có tồn tại không
+            if (udao.getListUser() == null || udao.getListUser().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không có dữ liệu người dùng!");
+                return;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng!");
-        }
-        
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi khi đăng nhập: " + e.getMessage());
-        
-    }  
+            
+            for(ModelUser m : udao.getListUser()){
+                if(UserNameTextField.getText().equalsIgnoreCase(m.getUsername()) && 
+                   UserPasswordField.getText().equalsIgnoreCase(m.getPassword())){
+                    user = m;
+                    kt = true;
+                    break; // Thoát khỏi loop khi tìm thấy
+                }   
+            }
+            
+            if(kt) {
+                JOptionPane.showMessageDialog(this, "Đăng nhập thành công");
+                
+                // Use SwingUtilities.invokeLater for better thread safety
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        Dashboard testDashboard = new Dashboard();
+                        testDashboard.setVisible(true);
+                        testDashboard.pack();
+                        testDashboard.setLocationRelativeTo(null);
+                        this.dispose();
+                    } catch (ExceptionInInitializerError e) {
+                        System.err.println("ExceptionInInitializerError in Dashboard: " + e.getMessage());
+                        e.printStackTrace();
+                        if (e.getCause() != null) {
+                            System.err.println("Caused by: " + e.getCause().getMessage());
+                            e.getCause().printStackTrace();
+                        }
+                        JOptionPane.showMessageDialog(this, "Lỗi khởi tạo Dashboard. Vui lòng kiểm tra console để biết chi tiết.");
+                    } catch (Exception e) {
+                        System.err.println("Lỗi khi khởi tạo Dashboard: " + e.getMessage());
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Lỗi khi khởi tạo Dashboard: " + e.getMessage());
+                    }
+                });
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng!");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi trong quá trình đăng nhập: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi đăng nhập: " + e.getMessage());
+        }  
     }//GEN-LAST:event_LoginButtonActionPerformed
 
   

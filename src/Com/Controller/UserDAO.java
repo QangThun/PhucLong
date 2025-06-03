@@ -7,27 +7,37 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class UserDAO extends DAO{
-    ArrayList<ModelUser> dsUser;
+    private ArrayList<ModelUser> dsUser;
 
     public UserDAO() {
+        super(); // Call parent constructor first
+        
         // check connection with better error handling
         try {
-            if (getConn() != null) {
+            if (getConn() != null && !getConn().isClosed()) {
                 System.out.println("Database connection successful!");
                 dsUser = getListUser();
             } else {
                 dsUser = new ArrayList<>();
-                System.err.println("Không thể khởi tạo UserDAO - connection null");
-                JOptionPane.showMessageDialog(null, "Lỗi kết nối database! Kiểm tra:\n" +
-                    "1. MySQL Server đã chạy chưa?\n" +
+                System.err.println("Không thể khởi tạo UserDAO - connection null hoặc đã đóng");
+                // Remove JOptionPane from constructor to avoid EDT issues
+                System.err.println("Lỗi kết nối database! Kiểm tra:\n" +
+                    "1. SQL Server đã chạy chưa?\n" +
                     "2. Database có tồn tại không?\n" +
                     "3. Username/Password đúng chưa?");
             }
         } catch (Exception e) {
             dsUser = new ArrayList<>();
             System.err.println("Lỗi khởi tạo UserDAO: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Lỗi khởi tạo UserDAO: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+    
+    public ArrayList<ModelUser> getDsUser() {
+        if (dsUser == null) {
+            dsUser = getListUser();
+        }
+        return dsUser;
     }
     
     public boolean addUser(ModelUser modelUser){
@@ -53,20 +63,28 @@ public class UserDAO extends DAO{
                 ps.setNull(10, Types.BLOB);
             }else
                 ps.setBytes(10, modelUser.getImage());
-            JOptionPane.showMessageDialog(null, "Thêm thành công");
-            return ps.executeUpdate() > 0;
+            
+            boolean result = ps.executeUpdate() > 0;
+            if (result) {
+                JOptionPane.showMessageDialog(null, "Thêm thành công");
+                // Refresh user list
+                dsUser = getListUser();
+            }
+            return result;
         }catch(HeadlessException | SQLException ex){
             System.err.println("Lỗi addUser: " + ex.getMessage());
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi thêm user: " + ex.getMessage());
         }
         return false;
     }
     
     public ArrayList<ModelUser> getListUser(){
-        ArrayList<ModelUser> dsUser = new ArrayList<>();
+        ArrayList<ModelUser> userList = new ArrayList<>();
         
         if (getConn() == null) {
             System.err.println("Connection null - không thể lấy danh sách user");
-            return dsUser;
+            return userList;
         }
         
         String sql = "SELECT * FROM Staff";
@@ -82,19 +100,18 @@ public class UserDAO extends DAO{
                 s.setPhone(rs.getString("PhoneNumber"));
                 s.setAddress(rs.getString("AddressStaff"));
                 s.setUsername(rs.getString("UserName"));
-                // FIX: Đổi từ "PasswordStaff" thành "PassWordStaff" cho khớp với INSERT
                 s.setPassword(rs.getString("PassWordStaff"));
                 s.setEmail(rs.getString("Email"));
                 s.setPosition(rs.getString("Position"));
                 s.setImage(rs.getBytes("ImageStaff"));
-                dsUser.add(s);
+                userList.add(s);
             }
-            System.out.println("Loaded " + dsUser.size() + " users from database");
+            System.out.println("Loaded " + userList.size() + " users from database");
         }catch (SQLException ex){
             System.err.println("Lỗi getListUser: " + ex.getMessage());
             ex.printStackTrace();
         }
-        return dsUser;
+        return userList;
     }
     
     public boolean updateUser(ModelUser modelUser){
@@ -104,7 +121,8 @@ public class UserDAO extends DAO{
         }
         
         try {           
-            PreparedStatement ps = getConn().prepareStatement("UPDATE Staff SET FullName=?, Gender=?, DateStaff=?, PhoneNumber=?, AddressStaff=?, UserName=?, PassWordStaff=?, Email=?, Position=?, ImageStaff=? WHERE StaffID = "+modelUser.getId());
+            String sql = "UPDATE Staff SET FullName=?, Gender=?, DateStaff=?, PhoneNumber=?, AddressStaff=?, UserName=?, PassWordStaff=?, Email=?, Position=?, ImageStaff=? WHERE StaffID = ?";
+            PreparedStatement ps = getConn().prepareStatement(sql);
             ps.setString(1, modelUser.getName());
             ps.setString(2, modelUser.getGender());
             ps.setString(3, modelUser.getDateOfBirth());
@@ -115,11 +133,18 @@ public class UserDAO extends DAO{
             ps.setString(8, modelUser.getEmail());
             ps.setString(9, modelUser.getPosition());
             ps.setBytes(10, modelUser.getImage());
-            ps.execute();
-
-            JOptionPane.showMessageDialog(null, "Updated");    
-            return true;
+            ps.setInt(11, modelUser.getId()); // Use parameterized query
+            
+            boolean result = ps.executeUpdate() > 0;
+            if (result) {
+                JOptionPane.showMessageDialog(null, "Updated successfully");    
+                // Refresh user list
+                dsUser = getListUser();
+            }
+            return result;
         } catch (HeadlessException | SQLException e ) {
+            System.err.println("Lỗi updateUser: " + e.getMessage());
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "update not successful: " + e.getMessage());      
         }
         return false;
@@ -130,37 +155,60 @@ public class UserDAO extends DAO{
             throw new SQLException("Không có kết nối database!");
         }
         
-        String sqlDeleteChiTietHoaDon = "DELETE FROM ChiTietHoaDon WHERE MaHD IN " +
-                "(SELECT MaHD FROM HoaDon WHERE StaffID = ?)";
-        try (PreparedStatement stmt1 = getConn().prepareStatement(sqlDeleteChiTietHoaDon)) {
-            stmt1.setString(1, staffID);
-            stmt1.executeUpdate();
-        }
+        try {
+            // Turn off auto-commit for transaction
+            getConn().setAutoCommit(false);
+            
+            String sqlDeleteChiTietHoaDon = "DELETE FROM ChiTietHoaDon WHERE MaHD IN " +
+                    "(SELECT MaHD FROM HoaDon WHERE StaffID = ?)";
+            try (PreparedStatement stmt1 = getConn().prepareStatement(sqlDeleteChiTietHoaDon)) {
+                stmt1.setString(1, staffID);
+                stmt1.executeUpdate();
+            }
 
-        String sqlDeleteHoaDon = "DELETE FROM HoaDon WHERE StaffID = ?";
-        try (PreparedStatement stmt2 = getConn().prepareStatement(sqlDeleteHoaDon)) {
-            stmt2.setString(1, staffID);
-            stmt2.executeUpdate();
-        }
+            String sqlDeleteHoaDon = "DELETE FROM HoaDon WHERE StaffID = ?";
+            try (PreparedStatement stmt2 = getConn().prepareStatement(sqlDeleteHoaDon)) {
+                stmt2.setString(1, staffID);
+                stmt2.executeUpdate();
+            }
 
-        String sqlDeleteStaff = "DELETE FROM Staff WHERE StaffID = ?";
-        try (PreparedStatement stmt3 = getConn().prepareStatement(sqlDeleteStaff)) {
-            stmt3.setString(1, staffID);
-            return stmt3.executeUpdate()>0;
+            String sqlDeleteStaff = "DELETE FROM Staff WHERE StaffID = ?";
+            boolean result;
+            try (PreparedStatement stmt3 = getConn().prepareStatement(sqlDeleteStaff)) {
+                stmt3.setString(1, staffID);
+                result = stmt3.executeUpdate() > 0;
+            }
+            
+            if (result) {
+                getConn().commit();
+                // Refresh user list
+                dsUser = getListUser();
+            } else {
+                getConn().rollback();
+            }
+            
+            return result;
+        } catch (SQLException e) {
+            getConn().rollback();
+            throw e;
+        } finally {
+            getConn().setAutoCommit(true);
         }
     }
     
     public ArrayList<ModelUser> searchUser(String name){
-        ArrayList<ModelUser> dsUser = new ArrayList<>();
+        ArrayList<ModelUser> searchResult = new ArrayList<>();
         
         if (getConn() == null) {
             System.err.println("Connection null - không thể search user");
-            return dsUser;
+            return searchResult;
         }
         
-        String sql = "SELECT * FROM Staff where (FullName like N'%"+name+"%') or (FullName like N'"+name+"%') or (FullName like N'%"+name+"')";
+        // Fix SQL query - remove redundant conditions
+        String sql = "SELECT * FROM Staff WHERE FullName LIKE ?";
         try{
             PreparedStatement ps = getConn().prepareStatement(sql);
+            ps.setString(1, "%" + name + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
                 ModelUser s = new ModelUser();
@@ -175,11 +223,12 @@ public class UserDAO extends DAO{
                 s.setEmail(rs.getString("Email"));
                 s.setPosition(rs.getString("Position"));
                 s.setImage(rs.getBytes("ImageStaff"));
-                dsUser.add(s);
+                searchResult.add(s);
             }
         }catch (SQLException ex){
             System.err.println("Lỗi searchUser: " + ex.getMessage());
+            ex.printStackTrace();
         }
-        return dsUser;
+        return searchResult;
     }
 }
