@@ -35,7 +35,7 @@
               <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
               <Component id="jLabel2" min="-2" pref="29" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-              <Component id="scroll" pref="383" max="32767" attributes="0"/>
+              <Component id="scroll" pref="316" max="32767" attributes="0"/>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -51,7 +51,7 @@
           <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/Com/Icon/logo-dai-hoc-cong-nghiep-ha-noi-inkythuatso-01-21-15-51-20-removebg-preview (1).png"/>
+          <Image iconType="3" name="/Com/Icon/phuclongIcon.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="WELCOME"/>
       </Properties>
@@ -85,7 +85,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="208" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="298" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

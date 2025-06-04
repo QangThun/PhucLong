@@ -27,6 +27,33 @@ public class Menu extends javax.swing.JPanel {
     public Menu() {
         initComponents();
         setOpaque(false);
+        // THÊM CODE SCALE LOGO TẠI ĐÂY
+    try {
+        // Tải ảnh gốc
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/Com/Icon/phuclongIcon.png"));
+        
+        // Lấy kích thước mong muốn (thay đổi theo ý muốn)
+        int newWidth = 40;   // Chiều rộng mới
+        int newHeight = 40;  // Chiều cao mới
+        
+        // Scale ảnh với chất lượng cao
+        Image scaledImage = originalIcon.getImage().getScaledInstance(
+            newWidth, newHeight, Image.SCALE_SMOOTH);
+        
+        // Tạo ImageIcon mới từ ảnh đã scale
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        
+        // Áp dụng vào jLabel1
+        jLabel1.setIcon(scaledIcon);
+        jLabel1.setText("PHÚC LONG CAFE");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18));
+        
+    } catch (Exception e) {
+        System.err.println("Lỗi khi scale logo: " + e.getMessage());
+        // Nếu có lỗi, chỉ đổi text
+        jLabel1.setText("PHÚC LONG CAFE");
+        jLabel1.setIcon(null); // Xóa icon
+    }
         scroll.setViewportBorder(null);
         scroll.setBorder(null);
         scroll.getViewport().setOpaque(false);
@@ -141,7 +168,7 @@ public class Menu extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Com/Icon/logo-dai-hoc-cong-nghiep-ha-noi-inkythuatso-01-21-15-51-20-removebg-preview (1).png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Com/Icon/phuclongIcon.png"))); // NOI18N
         jLabel1.setText("WELCOME");
 
         scroll.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -154,7 +181,7 @@ public class Menu extends javax.swing.JPanel {
         panelMenu.setLayout(panelMenuLayout);
         panelMenuLayout.setHorizontalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 208, Short.MAX_VALUE)
+            .addGap(0, 298, Short.MAX_VALUE)
         );
         panelMenuLayout.setVerticalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,7 +216,7 @@ public class Menu extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
+                .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
     }// </editor-fold>//GEN-END:initComponents

@@ -23,10 +23,14 @@ public class Dashboard extends javax.swing.JFrame {
     
    public Dashboard() {
     try {
-        this.setTitle("Anh Em Quán");
-        setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
+        // Đổi title thành Phúc Long Cafe
+        this.setTitle("Phúc Long Cafe - Hệ thống quản lý");
+        // Đổi icon thành logo Phúc Long (cần chuẩn bị file icon mới)
+        setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/phuclongIcon.png")).getImage());
         initComponents();
-        getContentPane().setBackground(new Color(63, 109, 217));
+        
+        // Đổi màu nền chủ đạo thành màu xanh lá của Phúc Long
+        getContentPane().setBackground(new Color(46, 125, 50)); // Material Green tương tự Phúc Long
         
         // Initialize menu
         menu = new Menu();
@@ -60,7 +64,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel1.repaint();
         
     } catch (Exception e) {
-        System.out.println("Lỗi khi khởi tạo Dashboard: " + e.getMessage());
+        System.out.println("Lỗi khi khởi tạo Dashboard Phúc Long Cafe: " + e.getMessage());
         e.printStackTrace();
     }
 }
@@ -102,7 +106,7 @@ public class Dashboard extends javax.swing.JFrame {
                     showForm(inforForm);
                     break;
                 case 9:
-                    int opt = JOptionPane.showConfirmDialog(null, "Bạn có muốn thoát không ?", "Delete", JOptionPane.YES_NO_OPTION);
+                    int opt = JOptionPane.showConfirmDialog(null, "Bạn có muốn thoát khỏi hệ thống Phúc Long Cafe không?", "Thoát", JOptionPane.YES_NO_OPTION);
                     if (opt == 0) {
                         Login loginFrame = new Login();
                         loginFrame.setVisible(true);

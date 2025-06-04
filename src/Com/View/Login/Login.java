@@ -34,7 +34,7 @@ public class Login extends javax.swing.JFrame {
             }
             
             try {
-                setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/iconFrame.png")).getImage());
+                setIconImage(new ImageIcon(getClass().getResource("/Com/Icon/phuclongIcon.png")).getImage());
             } catch (Exception e) {
                 System.out.println("Không thể set icon frame: " + e.getMessage());
             }
@@ -50,14 +50,14 @@ public class Login extends javax.swing.JFrame {
     //Chỉnh kích thước ảnh theo với JLabel - Version an toàn
     public void scaleImage(){
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/ANh Em Quán.png"));
+            ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/PhucLong.png"));
             if (icon.getIconWidth() > 0) { // Kiểm tra image có load được không
                 Image img = icon.getImage();
                 Image imgScale = img.getScaledInstance(jLabel6.getWidth(), jLabel6.getHeight(), Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon = new ImageIcon(imgScale);
                 jLabel6.setIcon(scaledIcon);
             } else {
-                System.out.println("Không thể load image: /Com/Icon/ANh Em Quán.png");
+                System.out.println("Không thể load image: /Com/Icon/phuclongIcon.png");
             }
         } catch (Exception e) {
             System.out.println("Lỗi khi scale image: " + e.getMessage());

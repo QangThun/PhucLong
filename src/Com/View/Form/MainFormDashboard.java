@@ -77,7 +77,7 @@ public class MainFormDashboard extends javax.swing.JPanel {
     }
 
     private void initCardData() {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/imageMain.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("/Com/Icon/PhucLongMain.png"));
         card12.setIcon(icon);
     }
     
